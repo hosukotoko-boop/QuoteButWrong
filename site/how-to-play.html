@@ -1,0 +1,722 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Как играть — QuoteButWrong</title>
+    <meta name="description" content="Инструкция по игре QuoteButWrong">
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <style>
+        /* CSS VARIABLES — такие же как на главной */
+        :root {
+            --bg-primary: #0a0e1a;
+            --bg-secondary: #111827;
+            --bg-card: rgba(30, 41, 59, 0.7);
+            --text-primary: #ffffff;
+            --text-secondary: #94a3b8;
+            --accent-cyan: #06b6d4;
+            --accent-purple: #8b5cf6;
+            --accent-gradient: linear-gradient(135deg, #06b6d4 0%, #8b5cf6 100%);
+            --bg-gradient: linear-gradient(135deg, #1e1b4b 0%, #312e81 50%, #4c1d95 100%);
+            --border-color: rgba(148, 163, 184, 0.1);
+            --shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        a {
+            text-decoration: none;
+            color: inherit;
+            transition: all 0.3s ease;
+        }
+
+        /* HEADER */
+        .header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: rgba(10, 14, 26, 0.95);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--border-color);
+            z-index: 1000;
+            padding: 1rem 0;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        .nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            background: var(--accent-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2.5rem;
+            list-style: none;
+        }
+
+        .nav-links a {
+            color: var(--text-secondary);
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+
+        .nav-links a:hover {
+            color: var(--text-primary);
+        }
+
+        /* PAGE HEADER */
+        .page-header {
+            margin-top: 100px;
+            padding: 4rem 0 3rem;
+            background: var(--bg-gradient);
+        }
+
+        .page-title {
+            font-size: clamp(2.5rem, 5vw, 3.5rem);
+            font-weight: 800;
+            margin-bottom: 1rem;
+        }
+
+        .page-subtitle {
+            font-size: 1.25rem;
+            color: var(--text-secondary);
+            max-width: 700px;
+        }
+
+        /* SECTIONS */
+        .section {
+            padding: 4rem 0;
+        }
+
+        .section-title {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 2rem;
+        }
+
+        /* SCENARIO */
+        .scenario-list {
+            list-style: none;
+            max-width: 800px;
+        }
+
+        .scenario-list li {
+            padding: 1.5rem 0;
+            padding-left: 3rem;
+            position: relative;
+            color: var(--text-secondary);
+            font-size: 1.125rem;
+            line-height: 1.7;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .scenario-list li:last-child {
+            border-bottom: none;
+        }
+
+        .scenario-list li::before {
+            content: attr(data-number);
+            position: absolute;
+            left: 0;
+            top: 1.5rem;
+            width: 2rem;
+            height: 2rem;
+            background: var(--accent-gradient);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 0.875rem;
+            color: white;
+        }
+
+        .scenario-list a {
+            color: var(--accent-cyan);
+            text-decoration: underline;
+            text-underline-offset: 2px;
+        }
+
+        .scenario-list a:hover {
+            color: var(--accent-purple);
+        }
+
+        /* EXAMPLE CARD */
+        .example-section {
+            background: var(--bg-gradient);
+        }
+
+        .example-intro {
+            color: var(--text-secondary);
+            margin-bottom: 3rem;
+            font-size: 1.125rem;
+        }
+
+        .example-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 24px;
+            padding: 3rem;
+            backdrop-filter: blur(10px);
+            max-width: 1000px;
+        }
+
+        .example-label {
+            font-size: 0.875rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: var(--text-secondary);
+            margin-bottom: 1.5rem;
+        }
+
+        .quote-text {
+            font-size: 1.75rem;
+            font-weight: 600;
+            line-height: 1.5;
+            margin-bottom: 1.5rem;
+        }
+
+        .quote-text .missing-word {
+            border-bottom: 2px dashed var(--accent-cyan);
+            color: var(--accent-cyan);
+            padding: 0 0.5rem;
+        }
+
+        .quote-author {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+            margin-bottom: 3rem;
+            padding-bottom: 2rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .answers-label {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+            margin-bottom: 1.5rem;
+        }
+
+        .answers-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .answer-btn {
+            background: rgba(30, 41, 59, 0.8);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 1.25rem 2rem;
+            font-size: 1.125rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+
+        .answer-btn:hover {
+            border-color: var(--accent-cyan);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(6, 182, 212, 0.2);
+        }
+
+        .answer-btn.correct {
+            background: rgba(6, 182, 212, 0.2);
+            border-color: var(--accent-cyan);
+        }
+
+        .example-note {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+            padding-top: 2rem;
+            border-top: 1px solid var(--border-color);
+        }
+
+        /* FAQ SECTION */
+        .faq-section {
+            padding: 6rem 0;
+        }
+
+        .faq-title {
+            font-size: 2.5rem;
+            font-weight: 800;
+            margin-bottom: 3rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .faq-icon {
+            width: 40px;
+            height: 40px;
+            background: var(--accent-cyan);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--bg-primary);
+            font-weight: 700;
+        }
+
+        .faq-list {
+            max-width: 900px;
+        }
+
+        .faq-item {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 2rem;
+            margin-bottom: 1.5rem;
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+        }
+
+        .faq-item:hover {
+            border-color: var(--accent-cyan);
+            transform: translateY(-2px);
+        }
+
+        .faq-question {
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            color: var(--text-primary);
+        }
+
+        .faq-answer {
+            color: var(--text-secondary);
+            line-height: 1.7;
+            font-size: 1rem;
+        }
+
+        /* CTA BOX */
+        .cta-box {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 24px;
+            padding: 3rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 3rem;
+            margin-top: 4rem;
+            backdrop-filter: blur(10px);
+        }
+
+        .cta-box-content {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+        }
+
+        .cta-icon {
+            width: 64px;
+            height: 64px;
+            background: var(--accent-gradient);
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            flex-shrink: 0;
+        }
+
+        .cta-box h3 {
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .cta-box p {
+            color: var(--text-secondary);
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem 2.5rem;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            border: none;
+            flex-shrink: 0;
+        }
+
+        .btn-primary {
+            background: var(--accent-cyan);
+            color: var(--bg-primary);
+            box-shadow: 0 10px 30px rgba(6, 182, 212, 0.3);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 15px 40px rgba(6, 182, 212, 0.4);
+        }
+
+        /* BACK LINK */
+        .back-link {
+            text-align: center;
+            padding: 3rem 0;
+            color: var(--accent-cyan);
+            font-weight: 500;
+        }
+
+        .back-link:hover {
+            color: var(--accent-purple);
+        }
+
+        /* FOOTER */
+        .footer {
+            background: var(--bg-secondary);
+            border-top: 1px solid var(--border-color);
+            padding: 4rem 0 2rem;
+        }
+
+        .footer-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr;
+            gap: 4rem;
+            margin-bottom: 3rem;
+        }
+
+        .footer-brand h3 {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            background: var(--accent-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .footer-brand p {
+            color: var(--text-secondary);
+            line-height: 1.7;
+        }
+
+        .footer-column h4 {
+            font-size: 1rem;
+            margin-bottom: 1.5rem;
+            color: var(--text-primary);
+        }
+
+        .footer-column ul {
+            list-style: none;
+        }
+
+        .footer-column li {
+            margin-bottom: 0.75rem;
+        }
+
+        .footer-column a {
+            color: var(--text-secondary);
+            transition: color 0.3s ease;
+        }
+
+        .footer-column a:hover {
+            color: var(--accent-cyan);
+        }
+
+        .footer-bottom {
+            border-top: 1px solid var(--border-color);
+            padding-top: 2rem;
+            text-align: center;
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+        }
+
+        /* RESPONSIVE */
+        @media (max-width: 968px) {
+            .nav-links {
+                display: none;
+            }
+
+            .cta-box {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .cta-box-content {
+                flex-direction: column;
+            }
+
+            .footer-grid {
+                grid-template-columns: 1fr;
+                gap: 2rem;
+            }
+        }
+
+        @media (max-width: 640px) {
+            .container {
+                padding: 0 1rem;
+            }
+
+            .example-card {
+                padding: 2rem 1.5rem;
+            }
+
+            .quote-text {
+                font-size: 1.25rem;
+            }
+
+            .faq-item {
+                padding: 1.5rem;
+            }
+        }
+
+        /* ANIMATIONS */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .animate {
+            animation: fadeInUp 0.6s ease-out forwards;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- HEADER -->
+    <header class="header">
+        <nav class="nav container">
+            <a href="index.html" class="logo">QuoteButWrong</a>
+            <ul class="nav-links">
+                <li><a href="index.html">Главная</a></li>
+                <li><a href="how-to-play.html" style="color: var(--text-primary)">Как играть</a></li>
+                <li><a href="index.html#team">Команда</a></li>
+                <li><a href="index.html#contacts">Контакты</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <!-- PAGE HEADER -->
+    <section class="page-header">
+        <div class="container">
+            <h1 class="page-title">Как играть</h1>
+            <p class="page-subtitle">Короткий сценарий раунда — чтобы вы знали, чего ожидать ещё до запуска бота.</p>
+        </div>
+    </section>
+
+    <!-- SCENARIO -->
+    <section class="section">
+        <div class="container">
+            <h2 class="section-title">Сценарий</h2>
+            <ol class="scenario-list">
+                <li data-number="1">
+                    Откройте <a href="https://t.me/QuoteButWrong_bot" target="_blank">бота в Telegram</a> и запустите
+                    диалог.
+                </li>
+                <li data-number="2">
+                    Получите цитату, в которой одно слово скрыто — контекст помогает сузить выбор.
+                </li>
+                <li data-number="3">
+                    Сравните варианты и выберите то слово, которое наиболее точно заполняет пропуск.
+                </li>
+                <li data-number="4">
+                    Переходите к следующей цитате, когда будете готовы — темп задаёте вы.
+                </li>
+            </ol>
+        </div>
+    </section>
+
+    <!-- EXAMPLE -->
+    <section class="section example-section">
+        <div class="container">
+            <h2 class="section-title">Пример раунда</h2>
+            <p class="example-intro">Упрощённая иллюстрация: настоящие цитаты и подборки формируются в боте.</p>
+
+            <div class="example-card">
+                <p class="example-label">ЦИТАТА</p>
+                <blockquote class="quote-text">
+                    «Учиться можно только <span class="missing-word">весело</span>. Чтобы переварить знания, надо
+                    поглощать их с аппетитом».
+                </blockquote>
+                <p class="quote-author">Франсуа Мари Аруэ (Вольтер), из сборника афоризмов</p>
+
+                <p class="answers-label">Варианты ответа</p>
+                <div class="answers-grid">
+                    <div class="answer-btn">медленно</div>
+                    <div class="answer-btn correct">весело</div>
+                    <div class="answer-btn">легко</div>
+                </div>
+
+                <p class="example-note">В приложении вы нажимаете на вариант — и сразу видите, верно ли угадали.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- FAQ -->
+    <section class="section faq-section">
+        <div class="container">
+            <h2 class="faq-title">
+                <span class="faq-icon">?</span>
+                Частые вопросы
+            </h2>
+
+            <div class="faq-list">
+                <div class="faq-item">
+                    <h3 class="faq-question">Нужна ли регистрация?</h3>
+                    <p class="faq-answer">Нет: достаточно открыть диалог с ботом в Telegram и начать играть.</p>
+                </div>
+
+                <div class="faq-item">
+                    <h3 class="faq-question">Что если я ошибусь?</h3>
+                    <p class="faq-answer">Вы сразу видите результат и можете продолжить — раунды короткие и не требуют
+                        долгой подготовки.</p>
+                </div>
+
+                <div class="faq-item">
+                    <h3 class="faq-question">Это соревнование с другими?</h3>
+                    <p class="faq-answer">Формат ориентирован на личную вовлечённость и внимание к тексту; детали
+                        рейтингов зависят от версии бота.</p>
+                </div>
+            </div>
+
+            <!-- CTA BOX -->
+            <div class="cta-box">
+                <div class="cta-box-content">
+                    <div class="cta-icon">💬</div>
+                    <div>
+                        <h3>Готовы попробовать?</h3>
+                        <p>Один переход — и вы уже в игре.</p>
+                    </div>
+                </div>
+                <a href="https://t.me/QuoteButWrong_bot" class="btn btn-primary" target="_blank">
+                    Открыть в Telegram
+                </a>
+            </div>
+
+            <a href="index.html" class="back-link">← На главную</a>
+        </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-brand">
+                    <h3>QuoteButWrong</h3>
+                    <p>Интеллектуальная мини-игра с цитатами в Telegram.<br>
+                        Неофициальный информационный сайт проекта.</p>
+                </div>
+                <div class="footer-column">
+                    <h4>Навигация</h4>
+                    <ul>
+                        <li><a href="how-to-play.html">Как играть</a></li>
+                        <li><a href="index.html#team">Команда</a></li>
+                        <li><a href="index.html#contacts">Контакты</a></li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h4>Связь</h4>
+                    <ul>
+                        <li><a href="https://t.me/QuoteButWrong_bot" target="_blank">@QuoteButWrong_bot</a></li>
+                        <li><a
+                                href="https://docs.google.com/forms/d/e/1FAIpQLScd3j37TIjMq6tZ91buoSrkW5H_pAhYMjeBDn_arVvclFhrUg/viewform?usp=publish-editor">Форма
+                                обратной связи</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2026 QuoteButWrong</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Script for smooth scroll and animations -->
+    <script>
+        // Smooth scrolling
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+
+        // Animation on scroll
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver(function (entries) {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('animate');
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.faq-item, .example-card, .scenario-list li').forEach(el => {
+            observer.observe(el);
+        });
+
+        // Interactive answer buttons (demo)
+        document.querySelectorAll('.answer-btn').forEach(btn => {
+            btn.addEventListener('click', function () {
+                document.querySelectorAll('.answer-btn').forEach(b => b.classList.remove('correct'));
+                if (this.textContent.trim() === 'весело') {
+                    this.classList.add('correct');
+                }
+            });
+        });
+    </script>
+
+</body>
+
+</html>
