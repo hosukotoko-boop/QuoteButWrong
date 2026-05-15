@@ -1,0 +1,934 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QuoteButWrong — Цитаты с пропущенным словом</title>
+    <meta name="description" content="Интеллектуальная мини-игра с цитатами в Telegram">
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <style>
+        /* ============================================
+           CSS VARIABLES — редактируйте цвета здесь
+           ============================================ */
+        :root {
+            --bg-primary: #0a0e1a;
+            --bg-secondary: #111827;
+            --bg-card: rgba(30, 41, 59, 0.7);
+            --text-primary: #ffffff;
+            --text-secondary: #94a3b8;
+            --accent-cyan: #06b6d4;
+            --accent-purple: #8b5cf6;
+            --accent-gradient: linear-gradient(135deg, #06b6d4 0%, #8b5cf6 100%);
+            --bg-gradient: linear-gradient(135deg, #1e1b4b 0%, #312e81 50%, #4c1d95 100%);
+            --border-color: rgba(148, 163, 184, 0.1);
+            --shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+        }
+
+        /* ============================================
+           BASE STYLES
+           ============================================ */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        a {
+            text-decoration: none;
+            color: inherit;
+            transition: all 0.3s ease;
+        }
+
+        /* ============================================
+           HEADER & NAVIGATION
+           ============================================ */
+        .header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: rgba(10, 14, 26, 0.95);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--border-color);
+            z-index: 1000;
+            padding: 1rem 0;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        .nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            background: var(--accent-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2.5rem;
+            list-style: none;
+        }
+
+        .nav-links a {
+            color: var(--text-secondary);
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+
+        .nav-links a:hover {
+            color: var(--text-primary);
+        }
+
+        /* ============================================
+           HERO SECTION
+           ============================================ */
+        .hero {
+            margin-top: 80px;
+            padding: 8rem 0 6rem;
+            background: var(--bg-gradient);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: radial-gradient(circle at 50% 50%, rgba(139, 92, 246, 0.15) 0%, transparent 50%);
+            pointer-events: none;
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 1;
+            max-width: 800px;
+        }
+
+        .hero-subtitle {
+            font-size: 0.875rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: var(--accent-cyan);
+            margin-bottom: 1.5rem;
+        }
+
+        .hero-title {
+            font-size: clamp(2.5rem, 6vw, 4.5rem);
+            font-weight: 800;
+            line-height: 1.1;
+            margin-bottom: 1.5rem;
+        }
+
+        .hero-title .highlight {
+            background: var(--accent-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .hero-description {
+            font-size: 1.25rem;
+            color: var(--text-secondary);
+            margin-bottom: 3rem;
+            line-height: 1.7;
+        }
+
+        .hero-buttons {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem 2.5rem;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            border: none;
+        }
+
+        .btn-primary {
+            background: var(--accent-cyan);
+            color: var(--bg-primary);
+            box-shadow: 0 10px 30px rgba(6, 182, 212, 0.3);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 15px 40px rgba(6, 182, 212, 0.4);
+        }
+
+        .btn-secondary {
+            background: var(--bg-card);
+            color: var(--text-primary);
+            border: 1px solid var(--border-color);
+            backdrop-filter: blur(10px);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(30, 41, 59, 0.9);
+            border-color: var(--accent-cyan);
+        }
+
+        /* ============================================
+           FEATURES CARDS (Top)
+           ============================================ */
+        .features-top {
+            padding: 4rem 0;
+            background: var(--bg-primary);
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .feature-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 2rem;
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--accent-cyan);
+            box-shadow: var(--shadow);
+        }
+
+        .feature-card h3 {
+            font-size: 1.5rem;
+            margin-bottom: 0.75rem;
+            color: var(--text-primary);
+        }
+
+        .feature-card p {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+        }
+
+        /* ============================================
+           HOW IT WORKS SECTION
+           ============================================ */
+        .section {
+            padding: 6rem 0;
+        }
+
+        .section-title {
+            font-size: clamp(2rem, 4vw, 3rem);
+            font-weight: 800;
+            margin-bottom: 1rem;
+        }
+
+        .section-subtitle {
+            font-size: 1.125rem;
+            color: var(--text-secondary);
+            margin-bottom: 4rem;
+            max-width: 700px;
+        }
+
+        .steps-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+        }
+
+        .step-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            padding: 2.5rem 2rem;
+            text-align: center;
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+        }
+
+        .step-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow);
+        }
+
+        .step-icon {
+            width: 64px;
+            height: 64px;
+            margin: 0 auto 1.5rem;
+            background: var(--accent-gradient);
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+        }
+
+        .step-number {
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: var(--text-secondary);
+            margin-bottom: 1rem;
+        }
+
+        .step-card h3 {
+            font-size: 1.25rem;
+            margin-bottom: 1rem;
+            color: var(--text-primary);
+        }
+
+        .step-card p {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+            line-height: 1.7;
+        }
+
+        /* ============================================
+           BENTO GRID SECTION
+           ============================================ */
+        .bento-section {
+            background: var(--bg-gradient);
+        }
+
+        .bento-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            grid-template-rows: repeat(2, auto);
+            gap: 1.5rem;
+        }
+
+        .bento-item {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 24px;
+            padding: 2.5rem;
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+        }
+
+        .bento-item:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow);
+        }
+
+        .bento-item.large {
+            grid-column: span 2;
+        }
+
+        .bento-item.tall {
+            grid-row: span 2;
+        }
+
+        .bento-label {
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: var(--accent-cyan);
+            margin-bottom: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .bento-item h3 {
+            font-size: 1.75rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            color: var(--text-primary);
+        }
+
+        .bento-item p {
+            color: var(--text-secondary);
+            line-height: 1.7;
+            margin-bottom: 1.5rem;
+        }
+
+        .bento-tags {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        .tag {
+            background: rgba(6, 182, 212, 0.1);
+            color: var(--accent-cyan);
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.875rem;
+            font-weight: 500;
+            border: 1px solid rgba(6, 182, 212, 0.2);
+        }
+
+        .bento-item.highlight {
+            background: linear-gradient(135deg, rgba(139, 92, 246, 0.2) 0%, rgba(6, 182, 212, 0.2) 100%);
+            border-color: rgba(139, 92, 246, 0.3);
+        }
+
+        .bento-item.highlight .time-badge {
+            font-size: 3rem;
+            font-weight: 800;
+            background: var(--accent-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            display: block;
+            margin-top: 1rem;
+        }
+
+        /* ============================================
+           TEAM SECTION
+           ============================================ */
+        .team-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 3rem;
+        }
+
+        .team-description {
+            color: var(--text-secondary);
+            max-width: 700px;
+            line-height: 1.7;
+        }
+
+        .btn-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--text-primary);
+            font-weight: 600;
+            padding: 0.75rem 1.5rem;
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            background: var(--bg-card);
+            transition: all 0.3s ease;
+        }
+
+        .btn-link:hover {
+            border-color: var(--accent-cyan);
+            transform: translateX(5px);
+        }
+
+        .team-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+
+        .team-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 24px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .team-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow);
+        }
+
+        .team-avatar {
+            height: 280px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 6rem;
+            font-weight: 700;
+            background: var(--bg-secondary);
+        }
+
+        .team-avatar.cyan {
+            color: var(--accent-cyan);
+        }
+
+        .team-avatar.purple {
+            color: var(--accent-purple);
+        }
+
+        .team-info {
+            padding: 2rem;
+        }
+
+        .team-info h3 {
+            font-size: 1.25rem;
+            margin-bottom: 0.5rem;
+            color: var(--text-primary);
+        }
+
+        .team-info p {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+        }
+
+        /* ============================================
+           CTA SECTION
+           ============================================ */
+        .cta-section {
+            padding: 6rem 0;
+        }
+
+        .cta-box {
+            background: var(--bg-gradient);
+            border-radius: 32px;
+            padding: 4rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 3rem;
+            flex-wrap: wrap;
+        }
+
+        .cta-content h2 {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .cta-content p {
+            color: var(--text-secondary);
+            font-size: 1.125rem;
+            max-width: 600px;
+        }
+
+        .cta-buttons {
+            display: flex;
+            gap: 1rem;
+            flex-shrink: 0;
+        }
+
+        /* ============================================
+           FOOTER
+           ============================================ */
+        .footer {
+            background: var(--bg-secondary);
+            border-top: 1px solid var(--border-color);
+            padding: 4rem 0 2rem;
+        }
+
+        .footer-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr;
+            gap: 4rem;
+            margin-bottom: 3rem;
+        }
+
+        .footer-brand h3 {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            background: var(--accent-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .footer-brand p {
+            color: var(--text-secondary);
+            line-height: 1.7;
+        }
+
+        .footer-column h4 {
+            font-size: 1rem;
+            margin-bottom: 1.5rem;
+            color: var(--text-primary);
+        }
+
+        .footer-column ul {
+            list-style: none;
+        }
+
+        .footer-column li {
+            margin-bottom: 0.75rem;
+        }
+
+        .footer-column a {
+            color: var(--text-secondary);
+            transition: color 0.3s ease;
+        }
+
+        .footer-column a:hover {
+            color: var(--accent-cyan);
+        }
+
+        .footer-bottom {
+            border-top: 1px solid var(--border-color);
+            padding-top: 2rem;
+            text-align: center;
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+        }
+
+        /* ============================================
+           MOBILE RESPONSIVE
+           ============================================ */
+        @media (max-width: 968px) {
+            .nav-links {
+                display: none;
+            }
+
+            .bento-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .bento-item.large {
+                grid-column: span 1;
+            }
+
+            .footer-grid {
+                grid-template-columns: 1fr;
+                gap: 2rem;
+            }
+
+            .cta-box {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .team-header {
+                flex-direction: column;
+                gap: 1.5rem;
+            }
+        }
+
+        @media (max-width: 640px) {
+            .container {
+                padding: 0 1rem;
+            }
+
+            .hero {
+                padding: 6rem 0 4rem;
+            }
+
+            .section {
+                padding: 4rem 0;
+            }
+
+            .features-grid,
+            .steps-grid,
+            .team-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .hero-buttons,
+            .cta-buttons {
+                flex-direction: column;
+                width: 100%;
+            }
+
+            .btn {
+                width: 100%;
+            }
+        }
+
+        /* ============================================
+           ANIMATIONS
+           ============================================ */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .animate {
+            animation: fadeInUp 0.6s ease-out forwards;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- HEADER -->
+    <header class="header">
+        <nav class="nav container">
+            <a href="#" class="logo">QuoteButWrong</a>
+            <ul class="nav-links">
+                <li><a href="#home">Главная</a></li>
+                <li><a href="#how-it-works">Как играть</a></li>
+                <li><a href="#team">Команда</a></li>
+                <li><a href="#contacts">Контакты</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <!-- HERO SECTION -->
+    <section class="hero" id="home">
+        <div class="container">
+            <div class="hero-content">
+                <p class="hero-subtitle">Telegram · интеллектуальная игра</p>
+                <h1 class="hero-title">
+                    Цитаты, в которых спрятано <span class="highlight">одно слово</span>
+                </h1>
+                <p class="hero-description">
+                    QuoteButWrong показывает известную цитату с пропуском и варианты ответа. 
+                    Угадайте слово за считанные секунды — в привычном формате Telegram-бота.
+                </p>
+                <div class="hero-buttons">
+                    <a href="https://t.me/QuoteButWrong_bot" class="btn btn-primary" target="_blank">
+                        Открыть в Telegram
+                    </a>
+                    <a href="#how-it-works" class="btn btn-secondary">Как играть</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FEATURES TOP -->
+    <section class="features-top">
+        <div class="container">
+            <div class="features-grid">
+                <div class="feature-card">
+                    <h3>Быстро</h3>
+                    <p>Короткие раунды без лишних шагов</p>
+                </div>
+                <div class="feature-card">
+                    <h3>Умно</h3>
+                    <p>Внимание к смыслу и формулировке</p>
+                </div>
+                <div class="feature-card">
+                    <h3>В Telegram</h3>
+                    <p>Запуск в один тап с телефона</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- HOW IT WORKS -->
+    <section class="section" id="how-it-works">
+        <div class="container">
+            <h2 class="section-title">Как это работает</h2>
+            <p class="section-subtitle">
+                Четыре шага — от первой цитаты до следующей попытки. Без лишней бюрократии: 
+                только игра и фокус на слове.
+            </p>
+            <div class="steps-grid">
+                <div class="step-card">
+                    <div class="step-icon">📖</div>
+                    <p class="step-number">Шаг 1</p>
+                    <h3>Бот даёт цитату</h3>
+                    <p>Вы видите известную фразу с одним пропущенным словом — контекст остаётся на месте.</p>
+                </div>
+                <div class="step-card">
+                    <div class="step-icon">✅</div>
+                    <p class="step-number">Шаг 2</p>
+                    <h3>Варианты под рукой</h3>
+                    <p>Несколько вариантов ответа: нужно выбрать то слово, которое точно «закрывает» цитату.</p>
+                </div>
+                <div class="step-card">
+                    <div class="step-icon">⚡</div>
+                    <p class="step-number">Шаг 3</p>
+                    <h3>Сразу понятно</h3>
+                    <p>Без длинных инструкций: один ответ — и вы переходите к следующему раунду.</p>
+                </div>
+                <div class="step-card">
+                    <div class="step-icon">🏆</div>
+                    <p class="step-number">Шаг 4</p>
+                    <h3>Держите темп</h3>
+                    <p>Игра поддерживает азарт и внимательность — идеально для короткой перерыва в дне.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- BENTO GRID -->
+    <section class="section bento-section">
+        <div class="container">
+            <h2 class="section-title">Почему это цепляет</h2>
+            <p class="section-subtitle">
+                Сетка «bento» — наглядно и по-продуктовому: главное выделяется, детали не теряются на мобильном.
+            </p>
+            <div class="bento-grid">
+                <div class="bento-item large">
+                    <p class="bento-label">Фокус</p>
+                    <h3>Одно слово меняет смысл</h3>
+                    <p>Пропуск заставляет перечитать цитату заново — и замечать то, что раньше проскакивало мимо.</p>
+                    <div class="bento-tags">
+                        <span class="tag">Внимательность</span>
+                        <span class="tag">Культурный контекст</span>
+                        <span class="tag">Короткий сеанс</span>
+                    </div>
+                </div>
+                <div class="bento-item">
+                    <p class="bento-label">Ритм</p>
+                    <h3>Как кофе-брейк для мозга</h3>
+                    <p>Несколько раундов — и снова в работу или учёбу. Без долгих сессий и «обязаловки».</p>
+                </div>
+                <div class="bento-item">
+                    <p class="bento-label">Формат</p>
+                    <h3>Всё в Telegram</h3>
+                    <p>Не нужен отдельный аккаунт: открыл диалог — и игра уже идёт.</p>
+                </div>
+                <div class="bento-item large highlight">
+                    <p class="bento-label">Для кого</p>
+                    <h3>Любителям языка и цитат</h3>
+                    <p>Если вам нравится ловить нюансы формулировок и проверять себя на внимательность — это ваш формат.</p>
+                    <span class="time-badge">24/7</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- TEAM SECTION -->
+    <section class="section" id="team">
+        <div class="container">
+            <div class="team-header">
+                <div>
+                    <h2 class="section-title">Команда проекта</h2>
+                    <p class="team-description">
+                        Трое отвечали за бота, сопровождение проекта и этот сайт. Ниже — краткий тизер; 
+                        подробности и карточки — на отдельной странице.
+                    </p>
+                </div>
+                <a href="#" class="btn-link">
+                    Вся команда →
+                </a>
+            </div>
+            <div class="team-grid">
+                <div class="team-card">
+                    <div class="team-avatar cyan">ИБ</div>
+                    <div class="team-info">
+                        <h3>Брагин Илья Евгеньевич</h3>
+                        <p>Главный разработчик Telegram-бота</p>
+                    </div>
+                </div>
+                <div class="team-card">
+                    <div class="team-avatar purple">МЗ</div>
+                    <div class="team-info">
+                        <h3>Зенин Матвей Григорович</h3>
+                        <p>Тимлид, работа над отчётом проекта</p>
+                    </div>
+                </div>
+                <div class="team-card">
+                    <div class="team-avatar purple">ДС</div>
+                    <div class="team-info">
+                        <h3>Садеков Даниил Янович</h3>
+                        <p>Главный разработчик сайта</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA SECTION -->
+    <section class="cta-section" id="contacts">
+        <div class="container">
+            <div class="cta-box">
+                <div class="cta-content">
+                    <h2>Готовы проверить себя на цитатах?</h2>
+                    <p>Запустите QuoteButWrong в Telegram — и вернитесь сюда, если захотите оставить отзыв или идею через форму.</p>
+                </div>
+                <div class="cta-buttons">
+                    <a href="https://t.me/QuoteButWrong_bot" class="btn btn-primary" target="_blank">
+                        Открыть в Telegram
+                    </a>
+                    <a href="#" class="btn btn-secondary">Обратная связь</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-brand">
+                    <h3>QuoteButWrong</h3>
+                    <p>Интеллектуальная мини-игра с цитатами в Telegram.<br>
+                    Неофициальный информационный сайт проекта.</p>
+                </div>
+                <div class="footer-column">
+                    <h4>Навигация</h4>
+                    <ul>
+                        <li><a href="#how-it-works">Как играть</a></li>
+                        <li><a href="#team">Команда</a></li>
+                        <li><a href="#contacts">Контакты</a></li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h4>Связь</h4>
+                    <ul>
+                        <li><a href="https://t.me/QuoteButWrong_bot" target="_blank">@QuoteButWrong_bot</a></li>
+                        <li><a href="#">Форма обратной связи</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2026 QuoteButWrong</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Smooth Scroll Script -->
+    <script>
+        // Smooth scrolling for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+
+        // Add animation on scroll
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver(function(entries) {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('animate');
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, observerOptions);
+
+        // Observe all cards and sections
+        document.querySelectorAll('.step-card, .feature-card, .bento-item, .team-card').forEach(el => {
+            observer.observe(el);
+        });
+    </script>
+
+</body>
+</html>
