@@ -66,18 +66,18 @@ BotFather — это официальный бот в Telegram для регис
 ### через терминал
 Откройте терминал в PyCharm и выполните команду:
 
-```bash
+bash
 pip install python-telegram-bot
 
 ## Шаг 6. Примеры кода нашего бота
-```
+
 import telebot
 import random
 import string
 from telebot import types
 
 # 🔑 Токен
-BOT_TOKEN = "8491330439:AAG2igSzXlWSn_SoaWcSqvdQG41WEaHU1s8"
+BOT_TOKEN = "токен вашего бота"
 bot = telebot.TeleBot(BOT_TOKEN)
 
 # 📚 База цитат
